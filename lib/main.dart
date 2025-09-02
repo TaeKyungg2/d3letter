@@ -49,14 +49,14 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton.icon(
-                onPressed: () {
+              InkWell(
+                onTap: () {
+                  print("이미지 눌림!");
                   Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (context) => CardPage()));
                 },
-                icon: Image.asset('assets/send.png', width: 400, height: 300),
-                label: Text(""),
+                child: Image.asset('assets/send.png', width: 400, height: 300),
               ),
             ],
           ),
