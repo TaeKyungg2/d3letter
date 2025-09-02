@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:math';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 class CardPage extends StatefulWidget {
   const CardPage({super.key});
@@ -11,12 +12,12 @@ class CardPage extends StatefulWidget {
 }
 
 class _CardPageState extends State<CardPage> {
-  late Future<List<dynamic>> SaidList;
+  late Future<List<dynamic>> saidList;
 
   @override
   void initState() {
     super.initState();
-    SaidList = fetchSaid();
+    saidList = fetchSaid();
   }
 
   Future<List<dynamic>> fetchSaid() async {
@@ -34,8 +35,6 @@ class _CardPageState extends State<CardPage> {
 
   @override
   Widget build(BuildContext context) {
-    var random = Random();
-    int _currentIndex;
     int length;
     List<dynamic> saids = [];
     return Scaffold(
@@ -45,68 +44,70 @@ class _CardPageState extends State<CardPage> {
         title: Text('3letter', style: GoogleFonts.actor()),
         centerTitle: false,
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_left),
-                    color: const Color.fromARGB(255, 25, 240, 193),
-                    iconSize: 100,
-                    onPressed: () {
-                      print("눌림!");
-                    },
+      body: Center(
+        child: FutureBuilder(
+          future: saidList,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              saids = snapshot.data!;
+              length = saids.length;
+              List<dynamic> three = [];
+              var random = Random();
+              while (three.length < 3) {
+                var temp = saids[random.nextInt(length)];
+                if (!three.contains(temp)) {
+                  three.add(temp);
+                }
+              }
+              List<Container> cards = [
+                Container(
+                  alignment: Alignment.center,
+                  color: const Color.fromARGB(255, 142, 204, 255),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '${three[0]['text']}\n- ${three[0]['author']}',
+                      style: GoogleFonts.orbit(fontSize: 20),
+                    ),
                   ),
-                  FutureBuilder(
-                    future: SaidList,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        saids = snapshot.data!;
-                        length = saids.length;
-                        return Card(
-                          elevation: 30,
-                          color: Color.fromARGB(255, 144, 224, 238),
-                          child: SizedBox(
-                            width: 350,
-                            height: 400,
-                            child: Center(
-                              child: Text(
-                                '${saids[random.nextInt(length)]['text']}\n- ${saids[random.nextInt(length)]['author']}',
-                                style: GoogleFonts.songMyung(
-                                  fontSize: 20,
-                                  color: Color.fromRGBO(0, 0, 0, 1),
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
-                      }
-
-                      // By default, show a loading spinner.
-                      return const CircularProgressIndicator();
-                    },
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  color: const Color.fromARGB(255, 255, 211, 208),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '${three[1]['text']}\n- ${three[1]['author']}',
+                      style: GoogleFonts.orbit(fontSize: 20),
+                    ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.arrow_right),
-                    color: const Color.fromARGB(255, 23, 220, 255),
-                    iconSize: 100,
-                    onPressed: () {
-                      print("눌림!");
-                    },
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  color: const Color.fromARGB(255, 250, 219, 255),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '${three[2]['text']}\n- ${three[2]['author']}',
+                      style: GoogleFonts.orbit(fontSize: 20),
+                    ),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                ),
+              ];
+              return CardSwiper(
+                padding: EdgeInsetsGeometry.all(80),
+                cardsCount: cards.length,
+                cardBuilder:
+                    (context, index, percentThresholdX, percentThresholdY) =>
+                        cards[index],
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            // By default, show a loading spinner.
+            return const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }
