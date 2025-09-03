@@ -95,7 +95,7 @@ class _CardPageState extends State<CardPage> {
                 ),
               ];
               return CardSwiper(
-                padding: EdgeInsetsGeometry.all(80),
+                padding: EdgeInsetsGeometry.all(40),
                 cardsCount: cards.length,
                 cardBuilder:
                     (context, index, percentThresholdX, percentThresholdY) =>
