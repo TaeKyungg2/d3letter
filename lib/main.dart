@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'dart:convert';
 import 'card_page.dart';
 
 void main() {
@@ -58,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: Image.asset('assets/send.png', width: 400, height: 300),
               ),
+              
             ],
           ),
         ),
