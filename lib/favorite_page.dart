@@ -10,7 +10,7 @@ class FavoritePage extends StatefulWidget {
 
 class _FavoritePageState extends State<FavoritePage> {
   List<Text> fa_list = [
-    Text('ABC'),
+    Text('ABC',style:GoogleFonts.abel(),),
     Text('ABC'),
     Text('AfC'),
     Text('dBC'),
@@ -21,6 +21,9 @@ class _FavoritePageState extends State<FavoritePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(children: [...fa_list]);
+    return ListView(
+      children: [
+      ],
+    );
   }
 }

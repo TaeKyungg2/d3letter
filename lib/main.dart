@@ -55,7 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: Image.asset('assets/send.png', width: 400, height: 300),
               ),
-              
             ],
           ),
         ),

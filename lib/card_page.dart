@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:d3letters/favorite_page.dart';
+import 'package:like_button/like_button.dart';
 
 class CardPage extends StatefulWidget {
   const CardPage({super.key});
@@ -14,7 +16,6 @@ class CardPage extends StatefulWidget {
 
 class _CardPageState extends State<CardPage> {
   late Future<List<dynamic>> saidList;
-
   @override
   void initState() {
     super.initState();
@@ -38,17 +39,17 @@ class _CardPageState extends State<CardPage> {
   Widget build(BuildContext context) {
     int length;
     List<dynamic> saids = [];
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 70,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('3letter', style: GoogleFonts.actor()),
-        centerTitle: false,
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            FutureBuilder(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 70,
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text('3letter', style: GoogleFonts.actor()),
+            centerTitle: false,
+          ),
+          body: Center(
+            child: FutureBuilder(
               future: saidList,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -98,27 +99,73 @@ class _CardPageState extends State<CardPage> {
                     ),
                   ];
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      CardSwiper(
-                        padding: EdgeInsetsGeometry.all(40),
-                        cardsCount: cards.length,
-                        cardBuilder:
-                            (
-                              context,
-                              index,
-                              percentThresholdX,
-                              percentThresholdY,
-                            ) => cards[index],
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            DateTime.now().toString().substring(0, 10),
+                            style: GoogleFonts.aBeeZee(fontSize: 20),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => FavoritePage(),
+                      SizedBox(
+                        width: 500,
+                        height: 600,
+                        child: CardSwiper(
+                          allowedSwipeDirection: AllowedSwipeDirection.all(),
+                          padding: EdgeInsetsGeometry.all(40),
+                          cardsCount: cards.length,
+                          cardBuilder:
+                              (
+                                context,
+                                index,
+                                percentThresholdX,
+                                percentThresholdY,
+                              ) => cards[index],
+                          numberOfCardsDisplayed: 3,
+                          maxAngle: 30,
+                          threshold: 50,
+                          scale: 0.9,
+                          isDisabled: false,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => FavoritePage(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromARGB(
+                                233,
+                                188,
+                                176,
+                                255,
+                              ),
+                              elevation: 0,
                             ),
-                          );
-                        },
-                        child: Container(),
+                            child: Text(
+                              'favorite',
+                              style: GoogleFonts.aboreto(fontSize: 20),
+                            ),
+                          ),
+                          LikeButton(
+                            size: 50,
+                            circleColor: CircleColor(
+                              start: Color.fromARGB(246, 255, 225, 28),
+                              end: Color.fromARGB(246, 0, 195, 255),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   );
@@ -129,9 +176,9 @@ class _CardPageState extends State<CardPage> {
                 return const CircularProgressIndicator();
               },
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
