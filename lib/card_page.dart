@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -13,9 +12,31 @@ class CardPage extends StatefulWidget {
   @override
   State<CardPage> createState() => _CardPageState();
 }
+class MyCard extends StatelessWidget{
+  MyCard({required Color this.myColor,required Map this.said});
+  final Color myColor;
+  final Map said;
+  
+  @override
+  Widget build(BuildContext context)
+  {
+      return Container(
+      alignment: Alignment.center,
+      color: myColor,
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Text(
+          '${said!['text']}\n- ${said!['author']}',
+          style: GoogleFonts.orbit(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}
 
 class _CardPageState extends State<CardPage> {
   late Future<List<dynamic>> saidList;
+  List<Map> fav=[];
   @override
   void initState() {
     super.initState();
@@ -34,13 +55,12 @@ class _CardPageState extends State<CardPage> {
       throw Exception('Failed to load text');
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
     int length;
     List<dynamic> saids = [];
-    return LayoutBuilder(
-      builder: (context, constraints) {
         return Scaffold(
           appBar: AppBar(
             toolbarHeight: 70,
@@ -63,58 +83,33 @@ class _CardPageState extends State<CardPage> {
                       three.add(temp);
                     }
                   }
-                  List<Container> cards = [
-                    Container(
-                      alignment: Alignment.center,
-                      color: const Color.fromARGB(255, 142, 204, 255),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          '${three[0]['text']}\n- ${three[0]['author']}',
-                          style: GoogleFonts.orbit(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      color: const Color.fromARGB(255, 255, 211, 208),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          '${three[1]['text']}\n- ${three[1]['author']}',
-                          style: GoogleFonts.orbit(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      color: const Color.fromARGB(255, 250, 219, 255),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          '${three[2]['text']}\n- ${three[2]['author']}',
-                          style: GoogleFonts.orbit(fontSize: 20),
-                        ),
-                      ),
-                    ),
+                  List<MyCard> cards = [
+                    MyCard(myColor: Color.fromARGB(255, 142, 204, 255),
+                    said: three[0],),
+                    MyCard(myColor: Color.fromARGB(255, 255, 211, 208),
+                    said:three[1]),
+                    MyCard(myColor: Color.fromARGB(255, 250, 219, 255),
+                    said:three[2])
                   ];
+                  int current=0;
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Text(
-                            DateTime.now().toString().substring(0, 10),
-                            style: GoogleFonts.aBeeZee(fontSize: 20),
-                            textAlign: TextAlign.start,
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              DateTime.now().toString().substring(0, 10),
+                              style: GoogleFonts.aBeeZee(fontSize: 20),
+                              textAlign: TextAlign.start,
+                            ),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 500,
-                        height: 600,
+                      Expanded(
+                        flex: 7,
                         child: CardSwiper(
                           allowedSwipeDirection: AllowedSwipeDirection.all(),
                           padding: EdgeInsetsGeometry.all(40),
@@ -131,41 +126,43 @@ class _CardPageState extends State<CardPage> {
                           threshold: 50,
                           scale: 0.9,
                           isDisabled: false,
+                          onSwipe: (previousIndex, currentIndex, direction) {
+                            current=currentIndex!;
+                            return true; 
+                          },
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => FavoritePage(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(
-                                233,
-                                188,
-                                176,
-                                255,
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => FavoritePage(fav:fav),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(233, 6, 218, 255),
+                                elevation: 0,
                               ),
-                              elevation: 0,
+                              child: Text(
+                                'favorite',
+                                style: GoogleFonts.aboreto(fontSize: 20),
+                              ),
                             ),
-                            child: Text(
-                              'favorite',
-                              style: GoogleFonts.aboreto(fontSize: 20),
+                            LikeButton(
+                              size: 50,
+                              circleColor: CircleColor(
+                                start: Color.fromARGB(246, 255, 225, 28),
+                                end: Color.fromARGB(246, 0, 195, 255),
+                              ),
+                              onTap:(isLiked) => onLikeButtonTapped(isLiked,three[current])
                             ),
-                          ),
-                          LikeButton(
-                            size: 50,
-                            circleColor: CircleColor(
-                              start: Color.fromARGB(246, 255, 225, 28),
-                              end: Color.fromARGB(246, 0, 195, 255),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   );
@@ -178,7 +175,17 @@ class _CardPageState extends State<CardPage> {
             ),
           ),
         );
-      },
-    );
+  }
+  Future<bool> onLikeButtonTapped (bool isLiked,Map said)async{
+    if(!fav.contains(said)){
+      fav.add(said);
+    }
+  /// send your request here
+  // final bool success= await sendRequest();
+
+  /// if failed, you can do nothing
+  // return success? !isLiked:isLiked;
+
+    return !isLiked;
   }
 }
