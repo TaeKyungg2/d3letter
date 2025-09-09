@@ -128,8 +128,10 @@ class _CardPageState extends State<CardPage> {
                           isDisabled: false,
                           onSwipe: (previousIndex, currentIndex, direction) {
                             current=currentIndex!;
+                            
                             return true; 
                           },
+
                         ),
                       ),
                       Expanded(
@@ -145,7 +147,7 @@ class _CardPageState extends State<CardPage> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(233, 6, 218, 255),
+                                backgroundColor: Color.fromARGB(233, 6, 184, 255),
                                 elevation: 0,
                               ),
                               child: Text(

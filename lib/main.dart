@@ -48,7 +48,6 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               InkWell(
                 onTap: () {
-                  print("이미지 눌림!");
                   Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (context) => CardPage()));

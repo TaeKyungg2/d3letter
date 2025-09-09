@@ -14,8 +14,8 @@ class FavoritePage extends StatelessWidget {
       body: ListView(
         children: fav.map((item) {
         return ListTile(
-          title: Text(item['text']),
-          subtitle: Text(item['author']),
+          title: Text(item['text'],style:GoogleFonts.orbit()),
+          subtitle: Text(item['author'],style:GoogleFonts.orbit()),
           tileColor: Color.fromARGB(51, random.nextInt(255), random.nextInt(255), random.nextInt(255)),
         );
       }).toList(),
