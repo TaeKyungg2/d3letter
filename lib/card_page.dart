@@ -6,21 +6,42 @@ import 'dart:math';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:d3letters/favorite_page.dart';
 import 'package:like_button/like_button.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+Future<void> cacheFile(String filename, String contents) async {
+  final dir = await getApplicationDocumentsDirectory(); // 캐시용 디렉토리
+  final file = File('${dir.path}/$filename');
+  await file.writeAsString(contents);
+}
+
+Future<String> loadFile(String filename) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final file = File('${dir.path}/$filename');
+  if (await file.exists()) {
+    return await file.readAsString();
+  } else {
+    String date = DateTime.now().toString().substring(10);
+    await cacheFile(filename, date);
+    return date;
+  }
+}
 
 class CardPage extends StatefulWidget {
   const CardPage({super.key});
+
   @override
   State<CardPage> createState() => _CardPageState();
 }
-class MyCard extends StatelessWidget{
-  MyCard({required Color this.myColor,required Map this.said});
+
+class MyCard extends StatelessWidget {
+  MyCard({required Color this.myColor, required Map this.said});
   final Color myColor;
   final Map said;
-  
+
   @override
-  Widget build(BuildContext context)
-  {
-      return Container(
+  Widget build(BuildContext context) {
+    return Container(
       alignment: Alignment.center,
       color: myColor,
       child: Padding(
@@ -36,10 +57,12 @@ class MyCard extends StatelessWidget{
 
 class _CardPageState extends State<CardPage> {
   late Future<List<dynamic>> saidList;
-  List<Map> fav=[];
+  late Future<String> _date;
+  List<Map> fav = [];
   @override
   void initState() {
     super.initState();
+    //_date = loadFile('date');
     saidList = fetchSaid();
   }
 
@@ -55,138 +78,145 @@ class _CardPageState extends State<CardPage> {
       throw Exception('Failed to load text');
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
     int length;
     List<dynamic> saids = [];
-        return Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 70,
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            title: Text('3letter', style: GoogleFonts.actor()),
-            centerTitle: false,
-          ),
-          body: Center(
-            child: FutureBuilder(
-              future: saidList,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  saids = snapshot.data!;
-                  length = saids.length;
-                  List<dynamic> three = [];
-                  var random = Random();
-                  while (three.length < 3) {
-                    var temp = saids[random.nextInt(length)];
-                    if (!three.contains(temp)) {
-                      three.add(temp);
-                    }
-                  }
-                  List<MyCard> cards = [
-                    MyCard(myColor: Color.fromARGB(255, 142, 204, 255),
-                    said: three[0],),
-                    MyCard(myColor: Color.fromARGB(255, 255, 211, 208),
-                    said:three[1]),
-                    MyCard(myColor: Color.fromARGB(255, 250, 219, 255),
-                    said:three[2])
-                  ];
-                  int current=0;
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              DateTime.now().toString().substring(0, 10),
-                              style: GoogleFonts.aBeeZee(fontSize: 20),
-                              textAlign: TextAlign.start,
-                            ),
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 70,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('3letter', style: GoogleFonts.actor()),
+        centerTitle: false,
+      ),
+      body: Center(
+        child: FutureBuilder(
+          future: saidList,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              saids = snapshot.data!;
+              length = saids.length;
+              List<dynamic> three = [];
+              var random = Random();
+              while (three.length < 3) {
+                var temp = saids[random.nextInt(length)];
+                if (!three.contains(temp)) {
+                  three.add(temp);
+                }
+              }
+              List<MyCard> cards = [
+                MyCard(
+                  myColor: Color.fromARGB(255, 142, 204, 255),
+                  said: three[0],
+                ),
+                MyCard(
+                  myColor: Color.fromARGB(255, 255, 211, 208),
+                  said: three[1],
+                ),
+                MyCard(
+                  myColor: Color.fromARGB(255, 250, 219, 255),
+                  said: three[2],
+                ),
+              ];
+              int current = 0;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          DateTime.now().toString().substring(0, 10),
+                          style: GoogleFonts.aBeeZee(fontSize: 20),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 7,
+                    child: CardSwiper(
+                      allowedSwipeDirection: AllowedSwipeDirection.all(),
+                      padding: EdgeInsetsGeometry.all(40),
+                      cardsCount: cards.length,
+                      cardBuilder:
+                          (
+                            context,
+                            index,
+                            percentThresholdX,
+                            percentThresholdY,
+                          ) => cards[index],
+                      numberOfCardsDisplayed: 3,
+                      maxAngle: 30,
+                      threshold: 50,
+                      scale: 0.9,
+                      isDisabled: false,
+                      onSwipe: (previousIndex, currentIndex, direction) {
+                        current = currentIndex!;
+
+                        return true;
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => FavoritePage(fav: fav),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(233, 6, 184, 255),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'favorite',
+                            style: GoogleFonts.aboreto(fontSize: 20),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 7,
-                        child: CardSwiper(
-                          allowedSwipeDirection: AllowedSwipeDirection.all(),
-                          padding: EdgeInsetsGeometry.all(40),
-                          cardsCount: cards.length,
-                          cardBuilder:
-                              (
-                                context,
-                                index,
-                                percentThresholdX,
-                                percentThresholdY,
-                              ) => cards[index],
-                          numberOfCardsDisplayed: 3,
-                          maxAngle: 30,
-                          threshold: 50,
-                          scale: 0.9,
-                          isDisabled: false,
-                          onSwipe: (previousIndex, currentIndex, direction) {
-                            current=currentIndex!;
-                            
-                            return true; 
-                          },
-
+                        LikeButton(
+                          size: 50,
+                          circleColor: CircleColor(
+                            start: Color.fromARGB(246, 255, 225, 28),
+                            end: Color.fromARGB(246, 0, 195, 255),
+                          ),
+                          onTap: (isLiked) =>
+                              onLikeButtonTapped(isLiked, three[current]),
                         ),
-                      ),
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => FavoritePage(fav:fav),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(233, 6, 184, 255),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'favorite',
-                                style: GoogleFonts.aboreto(fontSize: 20),
-                              ),
-                            ),
-                            LikeButton(
-                              size: 50,
-                              circleColor: CircleColor(
-                                start: Color.fromARGB(246, 255, 225, 28),
-                                end: Color.fromARGB(246, 0, 195, 255),
-                              ),
-                              onTap:(isLiked) => onLikeButtonTapped(isLiked,three[current])
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
-            ),
-          ),
-        );
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            // By default, show a loading spinner.
+            return const CircularProgressIndicator();
+          },
+        ),
+      ),
+    );
   }
-  Future<bool> onLikeButtonTapped (bool isLiked,Map said)async{
-    if(!fav.contains(said)){
+
+  Future<bool> onLikeButtonTapped(bool isLiked, Map said) async {
+    if (!fav.contains(said)) {
       fav.add(said);
     }
-  /// send your request here
-  // final bool success= await sendRequest();
 
-  /// if failed, you can do nothing
-  // return success? !isLiked:isLiked;
+    /// send your request here
+    // final bool success= await sendRequest();
+
+    /// if failed, you can do nothing
+    // return success? !isLiked:isLiked;
 
     return !isLiked;
   }
