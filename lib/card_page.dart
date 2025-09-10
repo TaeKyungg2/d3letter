@@ -9,21 +9,22 @@ import 'package:like_button/like_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-Future<void> cacheFile(String filename, String contents) async {
-  final dir = await getApplicationDocumentsDirectory(); // 캐시용 디렉토리
-  final file = File('${dir.path}/$filename');
-  await file.writeAsString(contents);
+Future<void> cacheFavorites(List<Map> favorites) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final file = File('${dir.path}/favorites.json');
+  final jsonString = jsonEncode(favorites);
+  await file.writeAsString(jsonString);
 }
 
-Future<String> loadFile(String filename) async {
+Future<List<Map>> loadFavorites() async {
   final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/$filename');
+  final file = File('${dir.path}/favorites.json');
   if (await file.exists()) {
-    return await file.readAsString();
+    final contents = await file.readAsString();
+    final List<dynamic> decoded = jsonDecode(contents);
+    return decoded.cast<Map>();
   } else {
-    String date = DateTime.now().toString().substring(10);
-    await cacheFile(filename, date);
-    return date;
+    return [];
   }
 }
 
@@ -57,13 +58,19 @@ class MyCard extends StatelessWidget {
 
 class _CardPageState extends State<CardPage> {
   late Future<List<dynamic>> saidList;
-  late Future<String> _date;
   List<Map> fav = [];
   @override
   void initState() {
     super.initState();
-    //_date = loadFile('date');
     saidList = fetchSaid();
+    _loadFavorites();
+  }
+
+  void _loadFavorites() async {
+    final loadedFavorites = await loadFavorites();
+    setState(() {
+      fav = loadedFavorites;
+    });
   }
 
   Future<List<dynamic>> fetchSaid() async {
@@ -156,7 +163,6 @@ class _CardPageState extends State<CardPage> {
                       isDisabled: false,
                       onSwipe: (previousIndex, currentIndex, direction) {
                         current = currentIndex!;
-
                         return true;
                       },
                     ),
@@ -199,7 +205,6 @@ class _CardPageState extends State<CardPage> {
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
             }
-            // By default, show a loading spinner.
             return const CircularProgressIndicator();
           },
         ),
@@ -209,15 +214,16 @@ class _CardPageState extends State<CardPage> {
 
   Future<bool> onLikeButtonTapped(bool isLiked, Map said) async {
     if (!fav.contains(said)) {
-      fav.add(said);
+      setState(() {
+        fav.add(said);
+      });
+      await cacheFavorites(fav);
+    } else {
+      setState(() {
+        fav.remove(said);
+      });
+      await cacheFavorites(fav);
     }
-
-    /// send your request here
-    // final bool success= await sendRequest();
-
-    /// if failed, you can do nothing
-    // return success? !isLiked:isLiked;
-
     return !isLiked;
   }
 }

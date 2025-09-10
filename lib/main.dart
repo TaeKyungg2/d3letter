@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
 import 'card_page.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
-Future<void> cacheFile(String filename, String contents) async {
-  final dir = await getApplicationDocumentsDirectory(); // 캐시용 디렉토리
-  final file = File('${dir.path}/$filename');
-  await file.writeAsString(contents);
-}
 
-Future<String> loadFile(String filename) async {
-  final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/$filename');
-  if (await file.exists()) {
-    return await file.readAsString();
-  } else {
-    String date = DateTime.now().toString().substring(10);
-    await cacheFile(filename, date);
-    return date;
-  }
-}
 
 void main() => runApp(const MyApp());
 
@@ -40,17 +22,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late Future<String> _data;
-  @override
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
