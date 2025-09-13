@@ -16,7 +16,10 @@ class FavoritePage extends StatelessWidget {
         return ListTile(
           title: Text(item['text'],style:GoogleFonts.orbit()),
           subtitle: Text(item['author'],style:GoogleFonts.orbit()),
-          tileColor: Color.fromARGB(51, random.nextInt(255), random.nextInt(255), random.nextInt(255)),
+          tileColor: Color.fromARGB(50, random.nextInt(255), random.nextInt(255), random.nextInt(255)),
+          onLongPress: () {
+            
+          },
         );
       }).toList(),
       ),
