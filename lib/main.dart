@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'Good Said'),
+      home: const MyHomePage(title: 'd3lettersHome'),
     );
   }
 }
@@ -62,7 +62,7 @@ class MyHomePage extends StatelessWidget {
                     context,
                   ).push(MaterialPageRoute(builder: (context) => CardPage()));
                 },
-                child: Text('편지 보기        ', style: GoogleFonts.gowunDodum(
+                child: Text('편지 도착        ', style: GoogleFonts.gowunDodum(
                           fontSize: 40,
                           fontWeight: FontWeight.bold,
                           color:Color.fromARGB(255, 246, 242, 242)

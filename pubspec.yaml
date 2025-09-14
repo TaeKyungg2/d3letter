@@ -61,7 +61,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon.png"
+  image_path: "assets/icon_white.png"
   remove_alpha_ios: true
 # The following section is specific to Flutter packages.
 flutter:

@@ -88,14 +88,14 @@ class MyCard extends StatelessWidget {
 class _CardPageState extends State<CardPage> {
   List<Map> fav = [];
   List<Map> three = [
-    {"text": "letter", "author": "dev"},
-    {"text": "letter", "author": "dev"},
-    {"text": "letter", "author": "dev"},
+    {"text": "null", "author": "dev"},
+    {"text": "null", "author": "dev"},
+    {"text": "null", "author": "dev"},
   ];
   int cardValue = 0;
   List<MyCard> cards = [
     MyCard(
-      myColor: Color.fromARGB(255, 132, 202, 237),
+      myColor: Color.fromARGB(255, 141, 207, 240),
       said: {"text": "편지 오는 중...", "author": "taery"},
     ),
     MyCard(
@@ -107,20 +107,21 @@ class _CardPageState extends State<CardPage> {
       said: {"text": "편지 오는 중..", "author": "taery"},
     ),
   ];
-  Future<List<dynamic>> loadSaids() async {
+  Future<void> loadSaids() async {
     final String beforeDate = await loadDate();
     print(beforeDate);
     final threeCache = await loadThree();
     if (DateTime.now().toString().substring(0, 10) == beforeDate &&
+        threeCache[1]["text"] != "null" &&
         threeCache[1]["text"] != "letter") {
+      // threeCache가 있고, date 가 안 바뀌었다.
       print(threeCache[1]);
       print("goCache");
-      three = threeCache;
       setState(() {
         three = threeCache;
         cardValue = 1;
       });
-      return three;
+      return;
     }
     print("noCache");
     final response = await http.get(
@@ -129,22 +130,25 @@ class _CardPageState extends State<CardPage> {
       ),
     );
     if (response.statusCode == 200) {
+      print("cache successful");
       int length;
       List<dynamic> saids = jsonDecode(response.body);
       length = saids.length;
       var random = Random();
-      while (three.length < 3) {
+      int count_three = 0;
+      while (count_three < 3) {
         var temp = saids[random.nextInt(length)];
         if (!three.contains(temp)) {
-          three.add(temp);
+          three[count_three] = temp; //three 에 값 넣고, build 할때 key 를 바꾼다.
+          count_three += 1;
         }
       }
-      cacheThreeAndDate(three, DateTime.now().toString().substring(0, 10));
-      cards[0].said = three[0];
-      cards[1].said = three[1];
-      cards[2].said = three[2];
+      cardValue = 1;
+      cacheThreeAndDate(
+        three,
+        DateTime.now().toString().substring(0, 10),
+      ); //three 와 date 를 캐시한다
       setState(() {});
-      return three;
     } else {
       throw Exception('Failed to load text');
     }
@@ -183,9 +187,8 @@ class _CardPageState extends State<CardPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           'd3letters',
-          style: GoogleFonts.aboreto(
+          style: GoogleFonts.merriweather(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
             color: Color.fromARGB(246, 255, 255, 255),
           ),
         ),
@@ -211,9 +214,8 @@ class _CardPageState extends State<CardPage> {
                   ),
                   child: Text(
                     DateTime.now().toString().substring(0, 10) + " Letter",
-                    style: GoogleFonts.aboreto(
+                    style: GoogleFonts.merriweather(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 253, 253, 253),
                     ),
                     textAlign: TextAlign.start,
@@ -270,9 +272,8 @@ class _CardPageState extends State<CardPage> {
                       padding: EdgeInsets.all(20),
                       child: Text(
                         'favorite',
-                        style: GoogleFonts.aboreto(
+                        style: GoogleFonts.merriweather(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
                           color: Color.fromARGB(246, 255, 255, 255),
                         ),
                       ),
