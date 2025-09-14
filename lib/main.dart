@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'card_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:google_fonts/google_fonts.dart';
 void main() => runApp(const MyApp());
 Future<List<dynamic>> loadSaids() async {
   final response = await http.get(
@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 78, 196, 255),
         ),
       ),
+      debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Good Said'),
     );
   }
@@ -61,7 +62,11 @@ class MyHomePage extends StatelessWidget {
                     context,
                   ).push(MaterialPageRoute(builder: (context) => CardPage()));
                 },
-                child: Text('✉️', style: TextStyle(fontSize: 100)),
+                child: Text('편지 보기        ', style: GoogleFonts.gowunDodum(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color:Color.fromARGB(255, 246, 242, 242)
+                        )),
               ),
             ],
           ),
