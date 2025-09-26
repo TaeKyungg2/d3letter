@@ -1,5 +1,4 @@
 ## 🖼️ d3letters, 편지3개
-<img src="assets/icon.png" alt="logo" width="300" height="300">
 https://apps.apple.com/us/app/d3letters/id6752533431
 
 하루에 편지 3개가 오는 앱입니다. 편지는 명언들입니다.<br>
