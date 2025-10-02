@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
-import 'cache_fav.dart';
+import 'cache.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key, required List<Map> this.fav});
@@ -20,15 +20,15 @@ class _FavoritePageState extends State<FavoritePage> {
     for (int i = 0; i < widget.fav.length; i++) {
       favorite.add(
         ListTile(
+          key:ValueKey(widget.fav[i]["text"]),
+          selected: false,
           title: Text(
             widget.fav[i]["text"],
             style: GoogleFonts.orbit(color: Color.fromARGB(255, 0, 0, 0)),
           ),
           subtitle: Text(
             widget.fav[i]['author'],
-            style: GoogleFonts.orbit(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            style: GoogleFonts.orbit(color: Theme.of(context).colorScheme.primary),
           ),
           tileColor: i % 2 == 0
               ? Theme.of(context).colorScheme.inversePrimary
@@ -43,24 +43,14 @@ class _FavoritePageState extends State<FavoritePage> {
                     "편지 반환",
                     style: GoogleFonts.orbit(
                       fontSize: 30,
-                      color: Color.from(
-                        alpha: 255,
-                        red: 255,
-                        green: 255,
-                        blue: 255,
-                      ),
+                      color: Color.from(alpha: 255, red: 255, green: 255, blue: 255),
                     ),
                   ),
                   content: Text(
                     "이 편지를 돌려보내시겠습니까?",
                     style: GoogleFonts.orbit(
                       fontSize: 20,
-                      color: Color.from(
-                        alpha: 255,
-                        red: 255,
-                        green: 255,
-                        blue: 255,
-                      ),
+                      color: Color.from(alpha: 255, red: 255, green: 255, blue: 255),
                     ),
                   ),
                   actions: [
@@ -87,9 +77,7 @@ class _FavoritePageState extends State<FavoritePage> {
                       onPressed: () {
                         setState(() {
                           widget.fav.removeAt(
-                            widget.fav.indexWhere(
-                              (n) => n["text"] == widget.fav[i]["text"],
-                            ),
+                            widget.fav.indexWhere((n) => n["text"] == widget.fav[i]["text"]),
                           );
                         });
                         print("삭제 완료!");

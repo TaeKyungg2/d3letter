@@ -1,58 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'cache_fav.dart';
+import 'cache.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:d3letters/favorite_page.dart';
 import 'package:like_button/like_button.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-
-Future<void> cacheThreeAndDate(List<Map> three, String date) async {
-  final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/three.json');
-  final datefile = File('${dir.path}/date.txt');
-  final jsonString = jsonEncode(three);
-  await file.writeAsString(jsonString);
-  await datefile.writeAsString(date);
-}
-
-Future<List<Map>> loadThree() async {
-  final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/three.json');
-  if (await file.exists()) {
-    final contents = await file.readAsString();
-    final List<dynamic> decoded = jsonDecode(contents);
-    return decoded.cast<Map>();
-  } else {
-    return [];
-  }
-}
-
-Future<List<Map>> loadFavorites() async {
-  final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/favorites.json');
-  if (await file.exists()) {
-    final contents = await file.readAsString();
-    final List<dynamic> decoded = jsonDecode(contents);
-    return decoded.cast<Map>();
-  } else {
-    return [];
-  }
-}
-
-Future<String> loadDate() async {
-  final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/date.txt');
-  if (await file.exists()) {
-    final contents = await file.readAsString();
-    return contents;
-  } else {
-    return "null";
-  }
-}
+import 'mycard.dart';
 
 class CardPage extends StatefulWidget {
   const CardPage({super.key});
@@ -61,51 +16,18 @@ class CardPage extends StatefulWidget {
   State<CardPage> createState() => _CardPageState();
 }
 
-class MyCard extends StatelessWidget {
-  MyCard({required Color this.myColor, Map? this.said});
-  final Color myColor;
-  Map? said;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      color: myColor,
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Text(
-          '${said!['text']}\n- ${said!['author']}',
-          style: GoogleFonts.orbit(
-            fontSize: 20,
-            color: Color.fromARGB(246, 0, 0, 0),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _CardPageState extends State<CardPage> {
   List<Map> fav = [];
   List<Map> three = [
-    {"text": "null", "author": "dev"},
-    {"text": "null", "author": "dev"},
-    {"text": "null", "author": "dev"},
+    {"text": "편지 오는 중...", "author": "taery"},
+    {"text": "편지 오는 중...", "author": "taery"},
+    {"text": "편지 오는 중...", "author": "taery"},
   ];
   int cardValue = 0;
   List<MyCard> cards = [
-    MyCard(
-      myColor: Color.fromARGB(255, 141, 207, 240),
-      said: {"text": "편지 오는 중...", "author": "taery"},
-    ),
-    MyCard(
-      myColor: Color.fromARGB(255, 255, 211, 208),
-      said: {"text": "편지 오는 중..", "author": "taery"},
-    ),
-    MyCard(
-      myColor: Color.fromARGB(255, 250, 219, 255),
-      said: {"text": "편지 오는 중..", "author": "taery"},
-    ),
+    MyCard(myColor: Color.fromARGB(255, 141, 207, 240), said: {"text": "text", "author": "dev"}),
+    MyCard(myColor: Color.fromARGB(255, 255, 211, 208), said: {"text": "text", "author": "dev"}),
+    MyCard(myColor: Color.fromARGB(255, 250, 219, 255), said: {"text": "text", "author": "dev"}),
   ];
   Future<void> loadSaids() async {
     final String beforeDate = await loadDate();
@@ -144,10 +66,7 @@ class _CardPageState extends State<CardPage> {
         }
       }
       cardValue = 1;
-      cacheThreeAndDate(
-        three,
-        DateTime.now().toString().substring(0, 10),
-      ); //three 와 date 를 캐시한다
+      cacheThreeAndDate(three, DateTime.now().toString().substring(0, 10)); //three 와 date 를 캐시한다
       setState(() {});
     } else {
       throw Exception('Failed to load text');
@@ -187,10 +106,7 @@ class _CardPageState extends State<CardPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           'd3letters',
-          style: GoogleFonts.merriweather(
-            fontSize: 20,
-            color: Color.fromARGB(246, 255, 255, 255),
-          ),
+          style: GoogleFonts.merriweather(fontSize: 20, color: Colors.white),
         ),
         centerTitle: false,
       ),
@@ -203,15 +119,8 @@ class _CardPageState extends State<CardPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                    top: 20,
-                    right: 20,
-                    bottom: 25,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  ),
+                  padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 25),
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.inversePrimary),
                   child: Text(
                     DateTime.now().toString().substring(0, 10) + " Letter",
                     style: GoogleFonts.merriweather(
@@ -230,9 +139,7 @@ class _CardPageState extends State<CardPage> {
                 allowedSwipeDirection: AllowedSwipeDirection.all(),
                 padding: EdgeInsets.all(20),
                 cardsCount: cards.length,
-                cardBuilder:
-                    (context, index, percentThresholdX, percentThresholdY) =>
-                        cards[index],
+                cardBuilder: (context, index, percentThresholdX, percentThresholdY) => cards[index],
                 numberOfCardsDisplayed: 3,
                 maxAngle: 30,
                 threshold: 50,
@@ -253,20 +160,14 @@ class _CardPageState extends State<CardPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => FavoritePage(fav: fav),
-                        ),
-                      );
+                      Navigator.of(
+                        context,
+                      ).push(MaterialPageRoute(builder: (context) => FavoritePage(fav: fav)));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.inversePrimary,
+                      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                     ),
                     child: Container(
                       padding: EdgeInsets.all(20),
@@ -298,12 +199,8 @@ class _CardPageState extends State<CardPage> {
                       key: ValueKey(currentIndexMy),
                       size: 50,
                       bubblesColor: BubblesColor(
-                        dotPrimaryColor: Theme.of(
-                          context,
-                        ).colorScheme.inversePrimary,
-                        dotSecondaryColor: Theme.of(
-                          context,
-                        ).colorScheme.surface,
+                        dotPrimaryColor: Theme.of(context).colorScheme.inversePrimary,
+                        dotSecondaryColor: Theme.of(context).colorScheme.surface,
                       ),
                       circleColor: CircleColor(
                         start: Color.fromARGB(246, 255, 225, 28),

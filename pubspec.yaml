@@ -1,7 +1,7 @@
 name: "d3letters"
 description: "A new Flutter project."
 publish_to: 'none' 
-version: 1.0.0+3
+version: 1.0.1+4
 
 environment:
   sdk: ^3.9.0
@@ -18,6 +18,7 @@ dependencies:
   like_button: ^2.1.0
   path_provider: ^2.1.5
   provider: ^6.1.5+1
+  flutter_svg: ^2.2.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
