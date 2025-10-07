@@ -10,7 +10,7 @@ flutter로 구현했고 애플 앱스토어는 출시, 플레이스토어는 테
 제 가치관에 맞는 명언들로 조금은 편향될 수 있지만, 저와 비슷한 사람이라면 공감할 수 있을 것입니다.<br>
 | | | |
 |:--:|:--:|:--:|
-| <img src="git_assets/image1.png" width="200"/> | <img src="git_assets/image2.png" width="200"/> | <img src="git_assets/image3.png" width="200"/> |
+| <img src="git_assets/image1.png" width="30%"/> | <img src="git_assets/image2.png" width="30%"/> | <img src="git_assets/image3.png" width="30%"/> |
 |<img src="git_assets/image4.png" width="200"/>|<img src="git_assets/image5.png" width="200"/>|<img src="git_assets/image6.png" width="200"/>|
 
 
