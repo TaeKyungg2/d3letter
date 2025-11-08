@@ -8,6 +8,7 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:d3letters/favorite_page.dart';
 import 'package:like_button/like_button.dart';
 import 'mycard.dart';
+import 'dart:developer' as dev;
 
 class CardPage extends StatefulWidget {
   const CardPage({super.key});
@@ -31,38 +32,37 @@ class _CardPageState extends State<CardPage> {
   ];
   Future<void> loadSaids() async {
     final String beforeDate = await loadDate();
-    print(beforeDate);
+    dev.log(beforeDate);
     final threeCache = await loadThree();
     if (DateTime.now().toString().substring(0, 10) == beforeDate &&
         threeCache[1]["text"] != "null" &&
         threeCache[1]["text"] != "letter") {
       // threeCache가 있고, date 가 안 바뀌었다.
-      print(threeCache[1]);
-      print("goCache");
+      dev.log("goCache");
       setState(() {
         three = threeCache;
         cardValue = 1;
       });
       return;
     }
-    print("noCache");
+    dev.log("noCache");
     final response = await http.get(
       Uri.parse(
         'https://gist.githubusercontent.com/TaeKyungg2/dd77b00e3929e3feb64be5bd411096cf/raw/saying.json',
       ),
     );
     if (response.statusCode == 200) {
-      print("cache successful");
+      dev.log("cache successful");
       int length;
       List<dynamic> saids = jsonDecode(response.body);
       length = saids.length;
       var random = Random();
-      int count_three = 0;
-      while (count_three < 3) {
+      int countThree = 0;
+      while (countThree < 3) {
         var temp = saids[random.nextInt(length)];
         if (!three.contains(temp)) {
-          three[count_three] = temp; //three 에 값 넣고, build 할때 key 를 바꾼다.
-          count_three += 1;
+          three[countThree] = temp; //three 에 값 넣고, build 할때 key 를 바꾼다.
+          countThree += 1;
         }
       }
       cardValue = 1;
@@ -122,11 +122,8 @@ class _CardPageState extends State<CardPage> {
                   padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 25),
                   decoration: BoxDecoration(color: Theme.of(context).colorScheme.inversePrimary),
                   child: Text(
-                    DateTime.now().toString().substring(0, 10) + " Letter",
-                    style: GoogleFonts.merriweather(
-                      fontSize: 20,
-                      color: Color.fromARGB(255, 253, 253, 253),
-                    ),
+                    '${DateTime.now().toString().substring(0, 10)} Letter',
+                    style: GoogleFonts.merriweather(fontSize: 20, color: Colors.white),
                     textAlign: TextAlign.start,
                   ),
                 ),
@@ -173,10 +170,7 @@ class _CardPageState extends State<CardPage> {
                       padding: EdgeInsets.all(20),
                       child: Text(
                         'favorite',
-                        style: GoogleFonts.merriweather(
-                          fontSize: 20,
-                          color: Color.fromARGB(246, 255, 255, 255),
-                        ),
+                        style: GoogleFonts.merriweather(fontSize: 20, color: Colors.white),
                       ),
                     ),
                   ),
@@ -203,7 +197,7 @@ class _CardPageState extends State<CardPage> {
                         dotSecondaryColor: Theme.of(context).colorScheme.surface,
                       ),
                       circleColor: CircleColor(
-                        start: Color.fromARGB(246, 255, 225, 28),
+                        start: Colors.yellow,
                         end: Theme.of(context).colorScheme.inversePrimary,
                       ),
                       isLiked: checkLike(currentIndexMy),

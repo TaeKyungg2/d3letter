@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 import 'cache.dart';
+import 'dart:developer' as dev;
 
 class FavoritePage extends StatefulWidget {
-  const FavoritePage({super.key, required List<Map> this.fav});
+  const FavoritePage({super.key, required this.fav});
   final List<Map> fav;
 
   @override
@@ -24,15 +25,15 @@ class _FavoritePageState extends State<FavoritePage> {
           selected: false,
           title: Text(
             widget.fav[i]["text"],
-            style: GoogleFonts.orbit(color: Color.fromARGB(255, 0, 0, 0)),
+            style: GoogleFonts.orbit(color: Colors.black),
           ),
           subtitle: Text(
             widget.fav[i]['author'],
-            style: GoogleFonts.orbit(color: Theme.of(context).colorScheme.primary),
+            style: GoogleFonts.orbit(color: Colors.blueGrey),
           ),
           tileColor: i % 2 == 0
               ? Theme.of(context).colorScheme.inversePrimary
-              : Color.from(alpha: 255, red: 255, green: 255, blue: 255),
+              : Colors.white,
           onLongPress: () {
             showDialog(
               context: context,
@@ -43,14 +44,14 @@ class _FavoritePageState extends State<FavoritePage> {
                     "편지 반환",
                     style: GoogleFonts.orbit(
                       fontSize: 30,
-                      color: Color.from(alpha: 255, red: 255, green: 255, blue: 255),
+                      color: Colors.white,
                     ),
                   ),
                   content: Text(
                     "이 편지를 돌려보내시겠습니까?",
                     style: GoogleFonts.orbit(
                       fontSize: 20,
-                      color: Color.from(alpha: 255, red: 255, green: 255, blue: 255),
+                      color: Colors.white,
                     ),
                   ),
                   actions: [
@@ -62,7 +63,7 @@ class _FavoritePageState extends State<FavoritePage> {
                         "취소",
                         style: GoogleFonts.orbit(
                           fontSize: 30,
-                          color: Color.fromARGB(255, 3, 182, 195),
+                          color: Colors.blueAccent,
                         ),
                       ),
                     ),
@@ -71,7 +72,7 @@ class _FavoritePageState extends State<FavoritePage> {
                         "삭제",
                         style: GoogleFonts.orbit(
                           fontSize: 30,
-                          color: Color.fromARGB(131, 255, 7, 234),
+                          color: Colors.deepOrangeAccent,
                         ),
                       ),
                       onPressed: () {
@@ -80,7 +81,7 @@ class _FavoritePageState extends State<FavoritePage> {
                             widget.fav.indexWhere((n) => n["text"] == widget.fav[i]["text"]),
                           );
                         });
-                        print("삭제 완료!");
+                        dev.log('삭제 완료!');
                         cacheFavorites(widget.fav);
                         Navigator.of(context).pop();
                       },
