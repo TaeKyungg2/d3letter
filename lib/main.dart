@@ -65,7 +65,7 @@ class MyHomePage extends StatelessWidget {
                     style: GoogleFonts.gowunDodum(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 246, 242, 242),
+                      color: Colors.white,
                     ),
                   ),
                 ),
